@@ -32,7 +32,7 @@ const Login = () => {
 
     const onSubmit = data => {
         console.log(data)
-        signInWithEmailAndPassword(data.email, data.passsword);
+        signInWithEmailAndPassword(data.email, data.password);
     };
 
     return (
@@ -93,7 +93,7 @@ const Login = () => {
                                 {errors.password?.type === 'minLength' && <span class="label-text-alt text-red-500">{errors.password.message}</span>}
                             </label>
                         </div>
-                        {signInError};
+                        {signInError}
                         <input className='btn w-full text-white' max-w-xs value='Login' type="submit" />
                     </form>
                     <p><small>New to Doctors Portal? <Link className='text-primary' to="/signup">Create New Account</Link> </small></p>
