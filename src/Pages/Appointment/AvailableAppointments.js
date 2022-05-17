@@ -11,7 +11,7 @@ const AvailableAppointments = ({ date }) => {
     const [treatment, setTreatment] = useState(null);
     const formattedDate = format(date, 'PP');
 
-    const { data: services, isLoadinng, refetch } = useQuery(['available', formattedDate], () => fetch(`http://localhost:5000/available?date=${formattedDate}`)
+    const { data: services, isLoadinng, refetch } = useQuery(['available', formattedDate], () => fetch(`https://fathomless-forest-20211.herokuapp.com/available?date=${formattedDate}`)
         .then(res => res.json())
     )
     if (isLoadinng) {
@@ -20,8 +20,8 @@ const AvailableAppointments = ({ date }) => {
 
     //replaced with react query
     // useEffect(() => {
-    //     // fetch('http://localhost:5000/service') change it to available
-    //     fetch(`http://localhost:5000/available?date=${formattedDate}`)
+    //     // fetch('https://fathomless-forest-20211.herokuapp.com/service') change it to available
+    //     fetch(`https://fathomless-forest-20211.herokuapp.com/available?date=${formattedDate}`)
     //         .then(res => res.json())
     //         .then(data => setServices(data))
     // }, [formattedDate])

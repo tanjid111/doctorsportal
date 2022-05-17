@@ -10,7 +10,7 @@ const MyAppointments = () => {
     const [appointments, setAppointments] = useState([]);
     useEffect(() => {
         if (user) {
-            fetch(`http://localhost:5000/booking?patient=${user.email}`, {
+            fetch(`https://fathomless-forest-20211.herokuapp.com/booking?patient=${user.email}`, {
                 method: 'GET',
                 headers: {
                     //content type can also be sent but not necessary
