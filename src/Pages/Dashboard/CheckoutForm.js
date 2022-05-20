@@ -36,7 +36,7 @@ const CheckoutForm = ({ appointment }) => {
             return;
         }
         const card = elements.getElement(CardElement);
-        if (card == null) {
+        if (card === null) {
             return;
         }
         const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -92,7 +92,7 @@ const CheckoutForm = ({ appointment }) => {
                     'content-type': 'application/json',
                     'authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 },
-                body: JSON.stringify({ payment })
+                body: JSON.stringify(payment)
 
             }).then(res => res.json())
                 .then(data => {
