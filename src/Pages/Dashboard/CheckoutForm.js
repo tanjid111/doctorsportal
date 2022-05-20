@@ -6,16 +6,18 @@ const CheckoutForm = ({ appointment }) => {
     const stripe = useStripe();
     const elements = useElements();
     const [cardError, setCardError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [processing, setProcessing] = useState(false);
+    const [transactionId, setTransactionId] = useState('');
     const [clientSecret, setClientSecret] = useState('')
 
-    const { price } = appointment;
+    const { _id, price, patient, patientName } = appointment;
 
     useEffect(() => {
-        fetch('http://localhost:5000/create-payment-intent', {
+        fetch('https://fathomless-forest-20211.herokuapp.com/create-payment-intent', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
-                //content type can also be sent but not necessary
                 'authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
             body: JSON.stringify({ price })
@@ -43,6 +45,8 @@ const CheckoutForm = ({ appointment }) => {
         });
 
         setCardError(error?.message || '')
+        setSuccess('');
+        setProcessing(true)
 
         // or this way
         // if (error) {
@@ -52,6 +56,50 @@ const CheckoutForm = ({ appointment }) => {
         // else {
         //     setCardError('');
         // }
+
+        //confirm card payment
+        const { paymentIntent, error: intentError } = await stripe.confirmCardPayment(
+            clientSecret,
+            {
+                payment_method: {
+                    card: card,
+                    billing_details: {
+                        name: patientName,
+                        email: patient
+                    },
+                },
+            },
+        );
+        if (intentError) {
+            setCardError(intentError?.message)
+            setProcessing(false)
+        }
+        else {
+            setCardError('');
+            setTransactionId(paymentIntent.id)
+            console.log(paymentIntent);
+            setSuccess('Your payment is completed')
+
+            ///send payment to db
+            const payment = {
+                appointment: _id,
+                transactionId: paymentIntent.id
+            }
+
+            fetch(`https://fathomless-forest-20211.herokuapp.com/booking/${_id}`, {
+                method: 'PATCH',
+                headers: {
+                    'content-type': 'application/json',
+                    'authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+                body: JSON.stringify({ payment })
+
+            }).then(res => res.json())
+                .then(data => {
+                    setProcessing(false)
+                    console.log(data);
+                })
+        }
     }
     return (
         <>
@@ -78,6 +126,12 @@ const CheckoutForm = ({ appointment }) => {
             </form>
             {
                 cardError && <p className='text-red-500'>{cardError}</p>
+            }
+            {
+                success && <div className='text-green-500'>
+                    <p>{success}</p>
+                    <p>Your transaction Id: <span className="text-orange-500 font-bold">{transactionId}</span></p>
+                </div>
             }
         </>
     );
